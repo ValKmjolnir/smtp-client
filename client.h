@@ -4,6 +4,7 @@
 #include <windows.h>
 #include <winsock.h>
 #include <iostream>
+#include <fstream>
 #include <cstring>
 #pragma comment(lib,"ws2_32")
 

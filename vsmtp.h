@@ -23,12 +23,12 @@ private:
 public:
     smtp();
     ~smtp();
-    void smtp_connect(char*,char*);
+    void smtp_connect(char*);
     void set_username(const char*);
     void set_password(const char*);
     void set_receiver(const char*);
-    void set_subject(const char*);
-    void set_content(const char*);
+    void set_subject();
+    void set_content();
     void execute();
 };
 
@@ -72,19 +72,9 @@ bool smtp::check(const char* num,const char* err_info)
     return true;
 }
 
-void smtp::smtp_connect(char* hostname,char* port)
+void smtp::smtp_connect(char* hostname)
 {
-    int portnum=0;
-    for(int i=0;port[i];++i)
-    {
-        if(port[i]<'0' || port[i]>='9')
-        {
-            std::cout<<"incorrect port format.\n";
-            exit(1);
-        }
-        portnum=portnum*10+(port[i]-'0');
-    }
-    server_addr.sin_port=htons(portnum);
+    server_addr.sin_port=htons(25);// smtp port
     host_entry=gethostbyname(hostname);
     memcpy(&server_addr.sin_addr,host_entry->h_addr,host_entry->h_length);
 
@@ -237,9 +227,6 @@ bool smtp::smtp_quit()
 }
 void smtp::execute()
 {
-    // std::string sender="valkmjolnir@163.com";
-    // std::string password="UHOGDRDTBEXWRDHD";
-    // std::string receiver="valkmjolnir@163.com";
     bool (smtp::*func[])()=
     {
         &smtp::receive_ready,
@@ -272,14 +259,28 @@ void smtp::set_receiver(const char* argv)
     receiver=argv;
     return;
 }
-void smtp::set_subject(const char* argv)
+void smtp::set_subject()
 {
-    subject=argv;
+    subject="";
+    std::ifstream fin("subject",std::ios::binary);
+    while(!fin.eof())
+    {
+        char c=fin.get();
+        if(fin.eof()) break;
+        subject+=c;
+    }
     return;
 }
-void smtp::set_content(const char* argv)
+void smtp::set_content()
 {
-    content=argv;
+    content="";
+    std::ifstream fin("content",std::ios::binary);
+    while(!fin.eof())
+    {
+        char c=fin.get();
+        if(fin.eof()) break;
+        content+=c;
+    }
     return;
 }
 #endif
