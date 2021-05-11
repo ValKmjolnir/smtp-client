@@ -51,11 +51,14 @@ def send_exec():
             s+=i[0]+'\n'
     if(len(s)):
         tkinter.messagebox.showerror(title='error',message='please input:\n'+s)
+        return
     subject_file=open("subject","w")
     content_file=open("content","w")
     subject_file.write(subject.get())
     content_file.write(content.get(0.0,tkinter.END))
-    finput=os.popen(
+    subject_file.close()
+    content_file.close()
+    val=os.popen(
         'main '+
         smtpaddr.get()+' '+
         username.get()+' '+
@@ -63,6 +66,7 @@ def send_exec():
         receiver.get(),
         "w"
     )
+    val.close()
     return
 send=tkinter.Button(window,text="send",command=send_exec)
 send.place(x=280,y=380,anchor='nw')
