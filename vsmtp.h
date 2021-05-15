@@ -76,12 +76,17 @@ void smtp::smtp_connect(char* hostname)
 {
     server_addr.sin_port=htons(25);// smtp port
     host_entry=gethostbyname(hostname);
+    if(!host_entry)
+    {
+        std::cout<<"unknown address "<<hostname<<'\n';
+        exit(1);
+    }
     memcpy(&server_addr.sin_addr,host_entry->h_addr,host_entry->h_length);
 
     /* Connect the socket to the specified server. */
     if(connect(sd,(sockaddr*)&server_addr,sizeof(server_addr))<0)
     {
-        std::cout<<"connect failed\n";
+        std::cout<<"connection failed\n";
         exit(1);
     }
     return;
@@ -117,7 +122,7 @@ bool smtp::login()
     buf[recv(sd,buf,1023,0)]='\0';
     str=(buf+4);
     str=str.substr(0,str.length()-2);
-    std::cout<<decode(str)<<'\n';
+    std::cout<<decode(str)<<" inputing username...\n";
     if(!check("334","unable to input username"))
         return false;
     
@@ -131,7 +136,7 @@ bool smtp::login()
     buf[recv(sd,buf,1023,0)]='\0';
     str=(buf+4);
     str=str.substr(0,str.length()-2);
-    std::cout<<decode(str)<<'\n';
+    std::cout<<decode(str)<<" inputing password...\n";
     if(!check("334","unable to input password"))
         return false;
 
